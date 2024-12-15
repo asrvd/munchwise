@@ -2,6 +2,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -25,8 +26,11 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const isAuthPage = ["/sign-in", "/sign-up", "/"].includes(location.pathname);
-  const requiresAuth = ["/track", "/analytics", "/settings"].includes(location.pathname);
+  const isAuthPage = ["/sign-in", "/sign-up"].includes(location.pathname);
+  const isLandingPage = location.pathname === "/";
+  const requiresAuth = ["/track", "/analytics", "/settings", "/onboarding"].includes(
+    location.pathname
+  );
 
   if (loading) {
     return <div>Loading...</div>;
@@ -42,16 +46,16 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/sign-in" replace />;
   }
 
-  // Show navbar only on landing page
-  const showNavbar = location.pathname === "/";
+  // Show navbar on landing page and auth pages
+  const showNavbar = isLandingPage || isAuthPage;
   
   // Show sidebar only on authenticated dashboard pages
-  const showSidebar = !isAuthPage && user;
+  const showSidebar = !isAuthPage && !isLandingPage && user;
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {showNavbar && <Navbar />}
-      <div className="flex min-h-screen w-full">
+      <div className="flex flex-1 w-full">
         {showSidebar ? (
           <SidebarProvider>
             <AppSidebar />
@@ -64,6 +68,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
           <main className="flex-1">{children}</main>
         )}
       </div>
-    </>
+      <Footer />
+    </div>
   );
 };

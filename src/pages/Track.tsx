@@ -2,19 +2,21 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Utensils, Timer } from "lucide-react";
 
 const Track = () => {
   const { toast } = useToast();
   const [mealInput, setMealInput] = useState("");
-  const dailyGoal = 2000; // Hardcoded for now
-  const consumedCalories = 1450; // Hardcoded for now
+  const dailyGoal = 2000;
+  const consumedCalories = 1450;
+  const proteinGoal = 150;
+  const consumedProtein = 90;
+  const carbsGoal = 250;
+  const consumedCarbs = 180;
 
   const handleAddMeal = (e: React.FormEvent) => {
     e.preventDefault();
-    // Hardcoded calorie calculation
     const estimatedCalories = 300;
     toast({
       title: "Meal Added",
@@ -23,39 +25,55 @@ const Track = () => {
     setMealInput("");
   };
 
+  const CircularProgress = ({ value, max, size = 120, label }: { value: number; max: number; size?: number; label: string }) => {
+    const percentage = (value / max) * 100;
+    const strokeWidth = 8;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
+    const offset = circumference - (percentage / 100) * circumference;
+
+    return (
+      <div className="relative inline-flex flex-col items-center justify-center">
+        <svg width={size} height={size} className="-rotate-90">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="hsl(var(--primary) / 0.2)"
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="hsl(var(--primary))"
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+          />
+        </svg>
+        <div className="absolute flex flex-col items-center">
+          <span className="text-xl font-bold">{Math.round((value / max) * 100)}%</span>
+          <span className="text-sm text-muted-foreground">{label}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-6 animate-fade-in">
       <Card>
         <CardHeader>
           <CardTitle>Today's Progress</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>{consumedCalories} cal</span>
-              <span>{dailyGoal} cal goal</span>
-            </div>
-            <Progress value={(consumedCalories / dailyGoal) * 100} />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold">{dailyGoal - consumedCalories}</p>
-                <p className="text-sm text-muted-foreground">Calories Left</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold">4</p>
-                <p className="text-sm text-muted-foreground">Meals Today</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold">72%</p>
-                <p className="text-sm text-muted-foreground">Goal Progress</p>
-              </CardContent>
-            </Card>
+        <CardContent>
+          <div className="flex justify-around items-center py-4">
+            <CircularProgress value={consumedCalories} max={dailyGoal} label="Calories" />
+            <CircularProgress value={consumedProtein} max={proteinGoal} label="Protein" />
+            <CircularProgress value={consumedCarbs} max={carbsGoal} label="Carbs" />
           </div>
         </CardContent>
       </Card>
@@ -86,18 +104,32 @@ const Track = () => {
         <CardContent>
           <div className="space-y-4">
             {[
-              { time: "8:00 AM", meal: "Oatmeal with banana", calories: 350 },
-              { time: "1:00 PM", meal: "Chicken sandwich", calories: 450 },
-              { time: "4:00 PM", meal: "Greek yogurt", calories: 150 },
-              { time: "7:00 PM", meal: "Rice and curry", calories: 500 },
+              { time: "8:00 AM", meal: "Oatmeal with banana", calories: 350, protein: 12, carbs: 45, emoji: "🥣" },
+              { time: "1:00 PM", meal: "Chicken sandwich", calories: 450, protein: 28, carbs: 35, emoji: "🥪" },
+              { time: "4:00 PM", meal: "Greek yogurt", calories: 150, protein: 15, carbs: 8, emoji: "🍶" },
+              { time: "7:00 PM", meal: "Rice and curry", calories: 500, protein: 22, carbs: 65, emoji: "🍛" },
             ].map((meal, index) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                <div>
-                  <p className="font-medium">{meal.meal}</p>
-                  <p className="text-sm text-muted-foreground">{meal.time}</p>
-                </div>
-                <p className="font-medium">{meal.calories} cal</p>
-              </div>
+              <Card key={index} className="card-hover">
+                <CardContent className="flex items-center p-4">
+                  <div className="text-4xl mr-4">{meal.emoji}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Utensils className="h-4 w-4 text-primary" />
+                      <h3 className="font-medium">{meal.meal}</h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                      <Timer className="h-4 w-4" />
+                      <span>{meal.time}</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">{meal.calories} cal</p>
+                    <p className="text-sm text-muted-foreground">
+                      P: {meal.protein}g • C: {meal.carbs}g
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </CardContent>

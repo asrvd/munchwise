@@ -2,21 +2,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { LoadingScreen } from "@/components/ui/loading-screen";
+import { PersonalInfoForm } from "@/components/settings/PersonalInfoForm";
+import { NutritionGoalsForm } from "@/components/settings/NutritionGoalsForm";
 
 const formSchema = z.object({
   height: z.string().min(1, "Height is required"),
@@ -90,7 +84,7 @@ const Settings = () => {
   };
 
   if (isLoading) {
-    return <div className="container max-w-4xl py-8">Loading...</div>;
+    return <LoadingScreen />;
   }
 
   return (
@@ -109,99 +103,9 @@ const Settings = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="height"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Height (cm)</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="weight"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Weight (kg)</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
+              <PersonalInfoForm form={form} />
               <Separator />
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Nutrition Goals</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="calorieGoal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Daily Calories</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormDescription>Target calories per day</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="proteinGoal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Protein (g)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormDescription>Daily protein target</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="carbsGoal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Carbs (g)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormDescription>Daily carbs target</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="fatGoal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Fat (g)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormDescription>Daily fat target</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
+              <NutritionGoalsForm form={form} />
               <Button type="submit" className="w-full sm:w-auto">
                 Save Changes
               </Button>

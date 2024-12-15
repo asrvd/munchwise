@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
@@ -19,7 +25,7 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -27,6 +33,7 @@ const SignUp = () => {
         data: {
           name: name,
         },
+        emailRedirectTo: `${window.location.origin}/onboarding`,
       },
     });
 
@@ -37,7 +44,9 @@ const SignUp = () => {
     }
 
     setSignupComplete(true);
-    toast.success("Account created successfully! Please check your email for confirmation.");
+    toast.success(
+      "Account created successfully! Please check your email for confirmation."
+    );
     setLoading(false);
   };
 
@@ -52,15 +61,19 @@ const SignUp = () => {
         >
           <Card className="shadow-xl bg-orange-100 border border-orange-200/50">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center">Check Your Email</CardTitle>
+              <CardTitle className="text-2xl font-bold text-center">
+                Check Your Email
+              </CardTitle>
               <CardDescription className="text-center">
-                We've sent you a confirmation email to <span className="font-medium">{email}</span>
+                We've sent you a confirmation email to{" "}
+                <span className="font-medium">{email}</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center space-y-2">
                 <p className="text-muted-foreground">
-                  Please check your email and click the confirmation link to activate your account.
+                  Please check your email and click the confirmation link to
+                  activate your account.
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Once confirmed, you can{" "}
@@ -95,9 +108,7 @@ const SignUp = () => {
         <Card className="shadow-xl bg-orange-100/40 border border-orange-200/50">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Sign up</CardTitle>
-            <CardDescription>
-              Create an account to get started
-            </CardDescription>
+            <CardDescription>Create an account to get started</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

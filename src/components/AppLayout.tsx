@@ -52,6 +52,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   const isAuthPage = ["/sign-in", "/sign-up"].includes(location.pathname);
   const isLandingPage = location.pathname === "/";
+  const isOnboardingPage = location.pathname === "/onboarding";
   const requiresAuth = ["/track", "/analytics", "/settings", "/onboarding"].includes(
     location.pathname
   );
@@ -78,8 +79,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   // Show navbar on landing page and auth pages
   const showNavbar = isLandingPage || isAuthPage;
   
-  // Show sidebar only on authenticated dashboard pages
-  const showSidebar = !isAuthPage && !isLandingPage && user;
+  // Show sidebar only on authenticated dashboard pages, excluding onboarding
+  const showSidebar = !isAuthPage && !isLandingPage && !isOnboardingPage && user;
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
   LogOut,
@@ -23,6 +23,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const navigation = [
   { name: "Track", href: "/track", icon: Timer },
@@ -32,10 +34,16 @@ const navigation = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Add logout logic here
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Successfully logged out!");
+      navigate("/sign-in");
+    }
   };
 
   return (
@@ -71,8 +79,8 @@ export function AppSidebar() {
                 <User className="h-4 w-4" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-sm font-medium">John Doe</span>
-                <span className="text-xs text-muted-foreground">john@example.com</span>
+                <span className="text-sm font-medium">Account</span>
+                <span className="text-xs text-muted-foreground">Manage your account</span>
               </div>
             </div>
           </DropdownMenuTrigger>

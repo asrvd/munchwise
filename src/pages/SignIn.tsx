@@ -13,10 +13,29 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
+
+  const handleResendConfirmation = async () => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Confirmation email sent! Please check your inbox.");
+      }
+    } catch (error) {
+      toast.error("Failed to resend confirmation email");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setNeedsEmailConfirmation(false);
     
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -24,7 +43,12 @@ const SignIn = () => {
     });
 
     if (error) {
-      toast.error(error.message);
+      if (error.message.includes("Email not confirmed") || error.message.includes("email_not_confirmed")) {
+        setNeedsEmailConfirmation(true);
+        toast.error("Please confirm your email before signing in");
+      } else {
+        toast.error(error.message);
+      }
     } else {
       toast.success("Successfully signed in!");
       navigate("/track");
@@ -80,6 +104,22 @@ const SignIn = () => {
                   className="input-focus"
                 />
               </div>
+              {needsEmailConfirmation && (
+                <div className="p-4 bg-yellow-50 rounded-lg text-sm">
+                  <p className="text-yellow-800 mb-2">
+                    Please confirm your email address before signing in.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResendConfirmation}
+                    className="w-full"
+                  >
+                    Resend confirmation email
+                  </Button>
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Signing in..." : "Sign In"}
               </Button>

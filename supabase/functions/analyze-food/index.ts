@@ -30,7 +30,7 @@ serve(async (req: Request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+          model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
           messages: [
             {
               role: "system",
@@ -39,7 +39,7 @@ serve(async (req: Request) => {
             },
             {
               role: "user",
-            content: `Analyze this food and RETURN ONLY a JSON object with these nutritional values (use your best estimate) in exactly the following format, DONT ADD ANYTHING ELSE OTHER:
+              content: `Analyze this food and RETURN ONLY a JSON object with these nutritional values (use your best estimate) in exactly the following format, DONT ADD ANYTHING ELSE OTHER:
             {
               "calories": number (required),
               "protein": number in grams (required),

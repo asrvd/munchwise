@@ -42,7 +42,7 @@ const Track = () => {
         .select("*")
         .eq("user_id", user.id)
         .gte("meal_time", today.toISOString())
-        .order("meal_time", { ascending: false });
+        .order("meal_time", { ascending: true });
 
       if (error) throw error;
       return data;

@@ -8,16 +8,10 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
+import { SettingsFormValues } from "./PersonalInfoForm";
 
 interface NutritionGoalsFormProps {
-  form: UseFormReturn<{
-    height: string;
-    weight: string;
-    calorieGoal: string;
-    proteinGoal: string;
-    carbsGoal: string;
-    fatGoal: string;
-  }>;
+  form: UseFormReturn<SettingsFormValues>;
 }
 
 export const NutritionGoalsForm = ({ form }: NutritionGoalsFormProps) => {

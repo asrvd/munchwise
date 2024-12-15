@@ -7,17 +7,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import * as z from "zod";
+
+export type SettingsFormValues = {
+  height: string;
+  weight: string;
+  calorieGoal: string;
+  proteinGoal: string;
+  carbsGoal: string;
+  fatGoal: string;
+};
 
 interface PersonalInfoFormProps {
-  form: UseFormReturn<{
-    height: string;
-    weight: string;
-    calorieGoal: string;
-    proteinGoal: string;
-    carbsGoal: string;
-    fatGoal: string;
-  }>;
+  form: UseFormReturn<SettingsFormValues>;
 }
 
 export const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {

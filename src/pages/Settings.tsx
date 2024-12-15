@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { PersonalInfoForm } from "@/components/settings/PersonalInfoForm";
 import { NutritionGoalsForm } from "@/components/settings/NutritionGoalsForm";
+import type { SettingsFormValues } from "@/components/settings/PersonalInfoForm";
 
 const formSchema = z.object({
   height: z.string().min(1, "Height is required"),
@@ -47,19 +48,27 @@ const Settings = () => {
     enabled: !!session?.user?.id,
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
-    values: {
-      height: profile?.height?.toString() || "",
-      weight: profile?.weight?.toString() || "",
-      calorieGoal: profile?.daily_calories?.toString() || "",
-      proteinGoal: profile?.protein_goal?.toString() || "",
-      carbsGoal: profile?.carbs_goal?.toString() || "",
-      fatGoal: profile?.fat_goal?.toString() || "",
+    defaultValues: {
+      height: "",
+      weight: "",
+      calorieGoal: "",
+      proteinGoal: "",
+      carbsGoal: "",
+      fatGoal: "",
     },
+    values: profile ? {
+      height: profile.height?.toString() || "",
+      weight: profile.weight?.toString() || "",
+      calorieGoal: profile.daily_calories?.toString() || "",
+      proteinGoal: profile.protein_goal?.toString() || "",
+      carbsGoal: profile.carbs_goal?.toString() || "",
+      fatGoal: profile.fat_goal?.toString() || "",
+    } : undefined,
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: SettingsFormValues) => {
     try {
       const { error } = await supabase
         .from('profiles')

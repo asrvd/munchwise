@@ -1,69 +1,110 @@
-# Welcome to your Lovable project
+# MunchWise Tracker
 
-## Project info
+A comprehensive nutrition tracking application that helps users monitor their daily food intake, track macronutrients, and analyze their eating habits over time.
 
-**URL**: https://lovable.dev/projects/a6534cfb-4ce6-4145-85b7-601a2d051606
+## Features
 
-## How can I edit this code?
+- **User Authentication**: Secure email/password authentication powered by Supabase
+- **Profile Management**: Personalized user profiles with customizable nutrition goals
+- **Food Tracking**: Log meals with detailed nutritional information
+- **Real-time Analytics**: Visual representation of nutrition data using charts
+- **Goal Setting**: Set and monitor daily calorie and macronutrient targets
+- **Progress Monitoring**: Track progress with animated circular progress indicators
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**:
+  - React with TypeScript
+  - Vite for build tooling
+  - Tailwind CSS for styling
+  - shadcn/ui for UI components
+  - Recharts for data visualization
+  - React Query for data fetching and caching
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a6534cfb-4ce6-4145-85b7-601a2d051606) and start prompting.
+- **Backend (Supabase)**:
+  - PostgreSQL database
+  - Row Level Security (RLS) policies
+  - Edge Functions for custom logic
+  - Real-time subscriptions
+  - User authentication
 
-Changes made via Lovable will be committed automatically to this repo.
+## Supabase Features Utilized
 
-**Use your preferred IDE**
+1. **Authentication**
+   - Email/password authentication
+   - Protected routes
+   - User session management
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **Database**
+   - `profiles` table for user information and goals
+   - `food_entries` table for meal tracking
+   - Row Level Security (RLS) policies for data protection
+   - Database triggers for user profile creation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. **Edge Functions**
+   - Custom nutrition goals calculation
+   - Food analysis using AI
 
-Follow these steps:
+## Local Development Setup
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Prerequisites**
+   - Node.js (v18 or higher)
+   - npm or yarn package manager
+   - Git
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Clone the Repository**
+   ```bash
+   git clone <repository-url>
+   cd munchwise-tracker
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Install Dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+4. **Environment Setup**
+   The project uses Supabase, and the configuration is already set up in the codebase. No additional environment variables are needed for local development.
 
-**Edit a file directly in GitHub**
+5. **Start Development Server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+6. **Access the Application**
+   Open your browser and navigate to `http://localhost:8080`
 
-**Use GitHub Codespaces**
+## Database Schema
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Profiles Table
+- Stores user profile information and nutrition goals
+- Connected to Supabase auth.users via foreign key
+- Includes fields for age, height, weight, and nutrition targets
 
-## What technologies are used for this project?
+### Food Entries Table
+- Records individual meal entries
+- Includes nutritional information (calories, protein, carbs, fat)
+- Timestamps for meal tracking
+- Associated with user profiles
 
-This project is built with .
+## Security
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Row Level Security (RLS) policies ensure users can only access their own data
+- Secure authentication flow handled by Supabase
+- Protected API routes and database queries
 
-## How can I deploy this project?
+## Contributing
 
-Simply open [Lovable](https://lovable.dev/projects/a6534cfb-4ce6-4145-85b7-601a2d051606) and click on Share -> Publish.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-## I want to use a custom domain - is that possible?
+## License
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+This project is licensed under the MIT License.

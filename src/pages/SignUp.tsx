@@ -33,7 +33,11 @@ const SignUp = () => {
         data: {
           name: name,
         },
-        emailRedirectTo: `${window.location.origin}/onboarding`,
+        emailRedirectTo: `${
+          import.meta.env.PROD
+            ? "https://munchwise.vercel.app"
+            : "http://localhost:8080"
+        }/onboarding`,
       },
     });
 

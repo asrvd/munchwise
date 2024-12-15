@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-export const useProfileCreation = (userId: string | undefined) => {
+export const useProfileCreation = (userId: string | undefined, name?: string) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -21,7 +21,7 @@ export const useProfileCreation = (userId: string | undefined) => {
         if (!existingProfile) {
           const { error: insertError } = await supabase
             .from('profiles')
-            .insert([{ id: userId }]);
+            .insert([{ id: userId, name }]);
 
           if (insertError) throw insertError;
 
@@ -38,5 +38,5 @@ export const useProfileCreation = (userId: string | undefined) => {
     };
 
     createProfile();
-  }, [userId, navigate, toast]);
+  }, [userId, name, navigate, toast]);
 };

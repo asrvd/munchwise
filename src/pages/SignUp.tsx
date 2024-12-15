@@ -23,7 +23,7 @@ const SignUp = () => {
     }
   });
 
-  useProfileCreation(userId);
+  useProfileCreation(userId, name);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,20 +45,7 @@ const SignUp = () => {
       return;
     }
 
-    // Update profile with name
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({ name })
-      .eq('id', userId);
-
-    if (profileError) {
-      toast.error("Failed to update profile");
-      setLoading(false);
-      return;
-    }
-
     toast.success("Account created successfully!");
-    navigate("/onboarding");
     setLoading(false);
   };
 

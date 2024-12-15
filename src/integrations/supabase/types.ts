@@ -9,7 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      food_entries: {
+        Row: {
+          calories: number
+          carbs: number | null
+          created_at: string
+          fat: number | null
+          food_description: string
+          id: string
+          meal_time: string
+          protein: number | null
+          user_id: string
+        }
+        Insert: {
+          calories: number
+          carbs?: number | null
+          created_at?: string
+          fat?: number | null
+          food_description: string
+          id?: string
+          meal_time?: string
+          protein?: number | null
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number | null
+          created_at?: string
+          fat?: number | null
+          food_description?: string
+          id?: string
+          meal_time?: string
+          protein?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          carbs_goal: number | null
+          created_at: string
+          daily_calories: number | null
+          fat_goal: number | null
+          goal: string | null
+          height: number | null
+          id: string
+          protein_goal: number | null
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          carbs_goal?: number | null
+          created_at?: string
+          daily_calories?: number | null
+          fat_goal?: number | null
+          goal?: string | null
+          height?: number | null
+          id: string
+          protein_goal?: number | null
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          carbs_goal?: number | null
+          created_at?: string
+          daily_calories?: number | null
+          fat_goal?: number | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          protein_goal?: number | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

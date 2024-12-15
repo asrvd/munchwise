@@ -5,6 +5,7 @@ import { PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeFoodEntry } from "@/lib/analyze-food";
+import { Textarea } from "@/components/ui/textarea";
 
 export const AddMealForm = ({ onMealAdded }: { onMealAdded: () => void }) => {
   const { toast } = useToast();
@@ -63,14 +64,15 @@ export const AddMealForm = ({ onMealAdded }: { onMealAdded: () => void }) => {
   };
 
   return (
-    <form onSubmit={handleAddMeal} className="flex gap-2">
-      <Input
+    <form onSubmit={handleAddMeal} className="flex flex-col gap-2">
+      <Textarea
         placeholder="Describe your meal (e.g., 1 bowl rice, 100g chicken, 50g broccoli)"
         value={mealInput}
         onChange={(e) => setMealInput(e.target.value)}
         disabled={isAnalyzing}
+        className="h-32"
       />
-      <Button type="submit" disabled={isAnalyzing}>
+      <Button type="submit" disabled={isAnalyzing} className="lg:max-w-max">
         <PlusCircle className="h-4 w-4" />
         {isAnalyzing ? "Analyzing..." : "Add"}
       </Button>

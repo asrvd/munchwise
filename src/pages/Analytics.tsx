@@ -1,10 +1,17 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, startOfWeek, addDays } from "date-fns";
-import { CircularProgress } from "@/components/track/CircularProgress";
-import { WeeklyCaloriesChart } from "@/components/analytics/WeeklyCaloriesChart";
-import { NutritionStats } from "@/components/analytics/NutritionStats";
-import { WeeklySummary } from "@/components/analytics/WeeklySummary";
+import { Navigate } from "react-router-dom";
 
 const Analytics = () => {
   const { data: session } = useQuery({
@@ -84,6 +91,10 @@ const Analytics = () => {
     Math.abs(best.calories - (profile?.daily_calories || 2000)) ? current : best
   ).day;
 
+  if (!profile?.daily_calories) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-6 animate-fade-in">
       <div className="space-y-2">
@@ -93,36 +104,101 @@ const Analytics = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <CircularProgress
-          value={nutritionData.proteins}
-          max={profile?.protein_goal || 150}
-          label="Protein"
-        />
-        <CircularProgress
-          value={nutritionData.carbs}
-          max={profile?.carbs_goal || 250}
-          label="Carbs"
-        />
-        <CircularProgress
-          value={nutritionData.fats}
-          max={profile?.fat_goal || 70}
-          label="Fat"
-        />
-        <CircularProgress
-          value={averageDailyCalories}
-          max={profile?.daily_calories || 2000}
-          label="Calories"
-        />
+      <Card className="bg-orange-50/60 border border-orange-200/50">
+        <CardHeader>
+          <CardTitle>Weekly Calorie Intake</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={weeklyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgb(255 255 255 / 0.6)",
+                  borderRadius: "8px",
+                  border: "rgb(254 215 170 / 0.5)",
+                  backdropFilter: "blur(10px)",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="calories"
+                stroke="#F97316"
+                strokeWidth={1.5}
+              />
+              <Line
+                type="monotone"
+                dataKey="goal"
+                stroke="#94a3b8"
+                strokeDasharray="5 5"
+                strokeWidth={1.5}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      <div className="grid md:grid-cols-3 gap-6">
+        <Card className="bg-orange-50/60 border border-orange-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg">Proteins</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">
+              {nutritionData.proteins}g
+            </div>
+            <p className="text-sm text-muted-foreground">Daily Average</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-orange-50/60 border border-orange-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg">Carbohydrates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">
+              {nutritionData.carbs}g
+            </div>
+            <p className="text-sm text-muted-foreground">Daily Average</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-orange-50/60 border border-orange-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg">Fats</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">
+              {nutritionData.fats}g
+            </div>
+            <p className="text-sm text-muted-foreground">Daily Average</p>
+          </CardContent>
+        </Card>
       </div>
 
-      <WeeklyCaloriesChart weeklyData={weeklyData} />
-      <NutritionStats nutritionData={nutritionData} />
-      <WeeklySummary
-        averageDailyCalories={averageDailyCalories}
-        daysOnTarget={daysOnTarget}
-        bestDay={bestDay}
-      />
+      <Card className="bg-orange-50/60 border border-orange-200/50">
+        <CardHeader>
+          <CardTitle>Weekly Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span>Average Daily Calories</span>
+              <span className="font-medium">
+                {Math.round(averageDailyCalories)} cal
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Days On Target</span>
+              <span className="font-medium">{daysOnTarget}/7 days</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Best Day</span>
+              <span className="font-medium">{bestDay}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

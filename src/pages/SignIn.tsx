@@ -5,11 +5,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const SignIn = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,7 +50,7 @@ const SignIn = () => {
       }
     } else {
       toast.success("Successfully signed in!");
-      navigate("/track");
+      return redirect("/track");
     }
     
     setLoading(false);

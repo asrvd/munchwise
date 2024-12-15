@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { User, LogOut, Settings, BarChart, Utensils } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -14,22 +13,25 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: session } = useQuery({
-    queryKey: ['session'],
+    queryKey: ["session"],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       return session;
     },
   });
 
   const { data: profile } = useQuery({
-    queryKey: ['profile', session?.user?.id],
+    queryKey: ["profile", session?.user?.id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session?.user?.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", session?.user?.id)
         .single();
       return data;
     },
@@ -38,12 +40,18 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate('/sign-in');
+    queryClient.invalidateQueries({ queryKey: ["session"] });
+    queryClient.invalidateQueries({ queryKey: ["profile"] });
+    navigate("/", {
+      replace: true,
+    });
   };
 
   const getAvatarUrl = (email: string) => {
-    const seed = email || 'default';
-    return `https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(seed)}`;
+    const seed = email || "default";
+    return `https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(
+      seed
+    )}`;
   };
 
   return (
@@ -78,19 +86,28 @@ const Navbar = () => {
                   align="end"
                   className="bg-orange-50 text-base border border-orange-200/50 w-48"
                 >
-                  <DropdownMenuItem asChild className="text-base cursor-pointer">
+                  <DropdownMenuItem
+                    asChild
+                    className="text-base cursor-pointer"
+                  >
                     <Link to="/track">
                       <Utensils className="mr-2 h-4 w-4" />
                       Track
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="text-base cursor-pointer">
+                  <DropdownMenuItem
+                    asChild
+                    className="text-base cursor-pointer"
+                  >
                     <Link to="/analytics">
                       <BarChart className="mr-2 h-4 w-4" />
                       Analytics
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="text-base cursor-pointer">
+                  <DropdownMenuItem
+                    asChild
+                    className="text-base cursor-pointer"
+                  >
                     <Link to="/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings

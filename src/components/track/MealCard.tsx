@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Timer, Utensils, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Timer, Utensils, Trash2, ChevronDown, ChevronUp, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,7 +48,7 @@ export const MealCard = ({ meal, index, onDelete }: MealCardProps) => {
 
   return (
     <Card className="card-hover bg-white/60 border border-orange-200/50">
-      <CardContent className="flex items-center p-4">
+      <CardContent className="p-4 lg:flex lg:items-center hidden">
         <div className="text-4xl mr-4">{meal.emoji || '🍽️'}</div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
@@ -98,6 +98,45 @@ export const MealCard = ({ meal, index, onDelete }: MealCardProps) => {
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
+      </CardContent>
+      <CardContent className="flex flex-col gap-2 p-4 lg:hidden">
+        <div className="flex items-center gap-2 justify-between w-full">
+          <div className="flex items-center gap-2">
+            <Utensils className="h-4 w-4 text-primary" />
+            <h3 className="font-medium">Meal #{index + 1}</h3>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2 h-8 w-8 p-0"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+        </div>
+        {expanded && (
+          <div className="flex flex-col gap-2">
+            <div className="text-sm text-muted-foreground">
+              <p>{meal.food_description}</p>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Timer className="h-4 w-4" />
+              <span>
+                {new Date(meal.meal_time).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              <p className="flex items-center gap-1">
+                <Flame className="h-4 w-4" />
+                {meal.calories}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                P: {meal.protein || 0}g • C: {meal.carbs || 0}g • F: {meal.fat || 0}g
+              </p>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

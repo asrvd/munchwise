@@ -1,15 +1,43 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, redirect, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { calculateNutritionGoals } from "@/lib/calculate-goals";
 import { OnboardingMetricsForm } from "@/components/onboarding/OnboardingMetricsForm";
 import { NutritionGoalsForm } from "@/components/onboarding/NutritionGoalsForm";
 import { supabase } from "@/integrations/supabase/client";
-
+import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      return session;
+    },
+  });
+
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["profile", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session?.user?.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
   const [step, setStep] = useState(1);
   const [isCalculating, setIsCalculating] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,7 +48,7 @@ const Onboarding = () => {
     calorieGoal: "",
     proteinGoal: "",
     carbsGoal: "",
-    fatGoal: ""
+    fatGoal: "",
   });
 
   const calculateGoals = async () => {
@@ -30,29 +58,30 @@ const Onboarding = () => {
         age: Number(formData.age),
         height: Number(formData.height),
         weight: Number(formData.weight),
-        goal: formData.goal as 'lose' | 'maintain' | 'gain'
+        goal: formData.goal as "lose" | "maintain" | "gain",
       });
-      
-      setFormData(prev => ({
+
+      setFormData((prev) => ({
         ...prev,
         calorieGoal: goals.dailyCalories.toString(),
         proteinGoal: goals.protein.toString(),
         carbsGoal: goals.carbs.toString(),
-        fatGoal: goals.fat.toString()
+        fatGoal: goals.fat.toString(),
       }));
 
       toast({
         title: "Goals Calculated",
-        description: "Your nutrition goals have been calculated based on your metrics.",
+        description:
+          "Your nutrition goals have been calculated based on your metrics.",
       });
-      
+
       setStep(2);
     } catch (error) {
-      console.error('Error calculating goals:', error);
+      console.error("Error calculating goals:", error);
       toast({
         title: "Error",
         description: "Failed to calculate nutrition goals. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsCalculating(false);
@@ -61,10 +90,10 @@ const Onboarding = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const { error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
           age: parseInt(formData.age),
           height: parseFloat(formData.height),
@@ -73,28 +102,41 @@ const Onboarding = () => {
           daily_calories: parseInt(formData.calorieGoal),
           protein_goal: parseInt(formData.proteinGoal),
           carbs_goal: parseInt(formData.carbsGoal),
-          fat_goal: parseInt(formData.fatGoal)
+          fat_goal: parseInt(formData.fatGoal),
         })
-        .eq('id', (await supabase.auth.getUser()).data.user?.id);
+        .eq("id", (await supabase.auth.getUser()).data.user?.id);
 
       if (error) throw error;
 
       toast({
         title: "Profile Created!",
-        description: "Your nutrition goals have been set. Let's start tracking!",
+        description:
+          "Your nutrition goals have been set. Let's start tracking!",
       });
-      
-      // Add the redirect to /track page
-      navigate("/track", { replace: true });
+
+      // Prefetch the profile data
+      await queryClient.refetchQueries({ queryKey: ["profile"] });
+
+      navigate("/track");
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error("Error saving profile:", error);
       toast({
         title: "Error",
         description: "Failed to save your profile. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
+
+  console.log("onboarding", profile?.daily_calories);
+
+  if (isProfileLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (profile?.daily_calories) {
+    return <Navigate to="/track" replace />;
+  }
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center">
@@ -106,10 +148,12 @@ const Onboarding = () => {
           </p>
         </div>
 
-        <Card className="w-full">
+        <Card className="w-full border border-orange-200/50 bg-orange-50/60">
           <CardHeader>
             <CardTitle className="text-2xl text-center">
-              {step === 1 ? "Tell us about yourself" : "Your Personalized Goals"}
+              {step === 1
+                ? "Tell us about yourself"
+                : "Your Personalized Goals"}
             </CardTitle>
           </CardHeader>
           <CardContent>

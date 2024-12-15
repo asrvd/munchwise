@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { NutritionProgress } from "@/components/track/NutritionProgress";
 import { AddMealForm } from "@/components/track/AddMealForm";
 import { MealsList } from "@/components/track/MealsList";
+import { Navigate } from "react-router-dom";
 
 const Track = () => {
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
       const {
@@ -57,6 +58,14 @@ const Track = () => {
     }),
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
+
+  if (isProfileLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!profile?.daily_calories) {
+    return <Navigate to="/onboarding" replace />;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6 animate-fade-in">

@@ -21,13 +21,13 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AppLayout><Index /></AppLayout>} />
-          <Route path="/sign-in" element={<AppLayout><SignIn /></AppLayout>} />
-          <Route path="/sign-up" element={<AppLayout><SignUp /></AppLayout>} />
-          <Route path="/onboarding" element={<AppLayout><Onboarding /></AppLayout>} />
-          <Route path="/track" element={<AppLayout><Track /></AppLayout>} />
-          <Route path="/analytics" element={<AppLayout><Analytics /></AppLayout>} />
-          <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+          <Route path="/" element={<AppLayout><Index /></AppLayout>} key={"/"} />
+          <Route path="/sign-in" element={<AppLayout><SignIn /></AppLayout>} key={"/sign-in"} />
+          <Route path="/sign-up" element={<AppLayout><SignUp /></AppLayout>} key={"/sign-up"} />
+          <Route path="/onboarding" element={<AppLayout><Onboarding /></AppLayout>} key={"/onboarding"} />
+          <Route path="/track" element={<AppLayout><Track /></AppLayout>} key={"/track"} />
+          <Route path="/analytics" element={<AppLayout><Analytics /></AppLayout>} key={"/analytics"} />
+          <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} key={"/settings"} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

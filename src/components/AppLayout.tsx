@@ -76,8 +76,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/onboarding" replace />;
   }
 
-  // Show navbar on landing page and auth pages
-  const showNavbar = isLandingPage || isAuthPage;
+  // Show navbar on landing page, auth pages, and onboarding
+  const showNavbar = isLandingPage || isAuthPage || isOnboardingPage;
   
   // Show sidebar only on authenticated dashboard pages, excluding onboarding
   const showSidebar = !isAuthPage && !isLandingPage && !isOnboardingPage && user;

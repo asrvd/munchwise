@@ -36,6 +36,13 @@ const SignUp = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
+        <div className="space-y-2 text-center mb-6">
+          <h1 className="text-3xl font-bold tracking-tight">Create Account</h1>
+          <p className="text-muted-foreground">
+            Join us to start your nutrition journey
+          </p>
+        </div>
+
         <Card className="border-none shadow-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Create an account</CardTitle>

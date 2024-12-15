@@ -65,6 +65,13 @@ const Track = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6 animate-fade-in">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Track Meals</h1>
+        <p className="text-muted-foreground">
+          Log your meals and track your daily nutrition progress
+        </p>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Today's Progress</CardTitle>

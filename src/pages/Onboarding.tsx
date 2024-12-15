@@ -53,6 +53,13 @@ const Onboarding = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl animate-fade-in">
+      <div className="space-y-2 text-center mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Welcome Aboard</h1>
+        <p className="text-muted-foreground">
+          Let's personalize your nutrition journey
+        </p>
+      </div>
+
       {step === 1 ? (
         <Card className="w-full">
           <CardHeader>

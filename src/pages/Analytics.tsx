@@ -29,6 +29,13 @@ const Analytics = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6 animate-fade-in">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+        <p className="text-muted-foreground">
+          View insights and trends from your nutrition journey
+        </p>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Weekly Calorie Intake</CardTitle>

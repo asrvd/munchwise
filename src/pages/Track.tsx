@@ -6,10 +6,51 @@ import { useToast } from "@/hooks/use-toast";
 import { PlusCircle, Utensils, Timer, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { analyzeFoodEntry } from "@/lib/analyze-food";
+
+// Extract CircularProgress to a separate component for better organization
+const CircularProgress = ({ value, max, size = 120, label }: { value: number; max: number; size?: number; label: string }) => {
+  const percentage = max > 0 ? (value / max) * 100 : 0;
+  const strokeWidth = 8;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="relative inline-flex flex-col items-center justify-center">
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="hsl(var(--primary) / 0.2)"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="hsl(var(--primary))"
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className="text-xl font-bold">{Math.round(percentage)}%</span>
+        <span className="text-sm text-muted-foreground">{label}</span>
+      </div>
+    </div>
+  );
+};
 
 const Track = () => {
   const { toast } = useToast();
   const [mealInput, setMealInput] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Fetch user profile for goals
   const { data: profile } = useQuery({
@@ -62,74 +103,52 @@ const Track = () => {
     e.preventDefault();
     if (!mealInput.trim()) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    setIsAnalyzing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be signed in to add meals",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const { error } = await supabase
-      .from('food_entries')
-      .insert([
-        {
-          user_id: user.id,
-          food_description: mealInput,
-          calories: 300, // This should be calculated using AI in a real implementation
-          protein: 20,
-          carbs: 30,
-        }
-      ]);
+      // Analyze the food using the edge function
+      const analysis = await analyzeFoodEntry(mealInput);
 
-    if (error) {
+      const { error } = await supabase
+        .from('food_entries')
+        .insert([
+          {
+            user_id: user.id,
+            food_description: mealInput,
+            calories: analysis.calories,
+            protein: analysis.protein,
+            carbs: analysis.carbs,
+            fat: analysis.fat,
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Meal Added",
+        description: `Added: ${mealInput}`,
+      });
+      setMealInput("");
+      refetchMeals();
+    } catch (error) {
+      console.error('Error adding meal:', error);
       toast({
         title: "Error",
-        description: "Failed to add meal",
+        description: "Failed to add meal. Please try again.",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsAnalyzing(false);
     }
-
-    toast({
-      title: "Meal Added",
-      description: `Added: ${mealInput}`,
-    });
-    setMealInput("");
-    refetchMeals();
-  };
-
-  const CircularProgress = ({ value, max, size = 120, label }: { value: number; max: number; size?: number; label: string }) => {
-    const percentage = max > 0 ? (value / max) * 100 : 0;
-    const strokeWidth = 8;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (percentage / 100) * circumference;
-
-    return (
-      <div className="relative inline-flex flex-col items-center justify-center">
-        <svg width={size} height={size} className="-rotate-90">
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="hsl(var(--primary) / 0.2)"
-            strokeWidth={strokeWidth}
-            fill="none"
-          />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="hsl(var(--primary))"
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute flex flex-col items-center">
-          <span className="text-xl font-bold">{Math.round(percentage)}%</span>
-          <span className="text-sm text-muted-foreground">{label}</span>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -176,10 +195,11 @@ const Track = () => {
               placeholder="Describe your meal (e.g., 1 bowl rice, 2 chapati)"
               value={mealInput}
               onChange={(e) => setMealInput(e.target.value)}
+              disabled={isAnalyzing}
             />
-            <Button type="submit">
+            <Button type="submit" disabled={isAnalyzing}>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Add
+              {isAnalyzing ? "Analyzing..." : "Add"}
             </Button>
           </form>
         </CardContent>
@@ -224,7 +244,7 @@ const Track = () => {
                     <div className="text-right">
                       <p className="font-medium">{meal.calories} cal</p>
                       <p className="text-sm text-muted-foreground">
-                        P: {meal.protein || 0}g • C: {meal.carbs || 0}g
+                        P: {meal.protein || 0}g • C: {meal.carbs || 0}g • F: {meal.fat || 0}g
                       </p>
                     </div>
                   </CardContent>

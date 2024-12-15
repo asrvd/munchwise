@@ -33,11 +33,11 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a nutrition expert. Analyze the food description and return a JSON object with calories and macronutrients. Always return valid JSON with numbers for calories, protein, carbs, and fat in grams.'
+            content: 'You are a nutrition expert. Analyze the food description and return a JSON object with calories, macronutrients, and a relevant emoji. Choose from these emojis: 🍽️ (default), 🍳 (breakfast), 🥪 (lunch), 🍖 (dinner), 🥗 (salad), 🍜 (noodles/soup), 🍕 (pizza/fast food), 🍰 (dessert), 🥤 (drinks). Always return valid JSON with numbers for calories, protein, carbs, and fat in grams, and a single emoji string.'
           },
           {
             role: 'user',
-            content: `Analyze this food and return a JSON with calories, protein, carbs, and fat in grams: ${foodDescription}`
+            content: `Analyze this food and return a JSON with calories, protein, carbs, fat, and an appropriate emoji: ${foodDescription}`
           }
         ],
         max_tokens: 1000,

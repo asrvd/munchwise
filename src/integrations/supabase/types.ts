@@ -14,6 +14,7 @@ export type Database = {
           calories: number
           carbs: number | null
           created_at: string
+          emoji: string | null
           fat: number | null
           food_description: string
           id: string
@@ -25,6 +26,7 @@ export type Database = {
           calories: number
           carbs?: number | null
           created_at?: string
+          emoji?: string | null
           fat?: number | null
           food_description: string
           id?: string
@@ -36,6 +38,7 @@ export type Database = {
           calories?: number
           carbs?: number | null
           created_at?: string
+          emoji?: string | null
           fat?: number | null
           food_description?: string
           id?: string

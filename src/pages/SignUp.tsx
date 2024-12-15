@@ -7,11 +7,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfileCreation } from "@/hooks/useProfileCreation";
+import { toast } from "sonner";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string>();
 
   supabase.auth.onAuthStateChange((event, session) => {
@@ -24,13 +27,39 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name: name,
+        },
+      },
     });
-    if (!error) {
-      navigate("/onboarding");
+
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
     }
+
+    // Update profile with name
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ name })
+      .eq('id', userId);
+
+    if (profileError) {
+      toast.error("Failed to update profile");
+      setLoading(false);
+      return;
+    }
+
+    toast.success("Account created successfully!");
+    navigate("/onboarding");
+    setLoading(false);
   };
 
   return (
@@ -44,7 +73,7 @@ const SignUp = () => {
         <div className="space-y-2 text-center mb-6">
           <h1 className="text-3xl font-bold tracking-tight">Create an Account</h1>
           <p className="text-muted-foreground">
-            Enter your email below to create your account
+            Enter your details below to create your account
           </p>
         </div>
 
@@ -57,6 +86,18 @@ const SignUp = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="input-focus"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -80,8 +121,8 @@ const SignUp = () => {
                   className="input-focus"
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Sign Up
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating account..." : "Sign Up"}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">

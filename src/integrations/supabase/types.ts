@@ -58,6 +58,7 @@ export type Database = {
           goal: string | null
           height: number | null
           id: string
+          name: string | null
           protein_goal: number | null
           weight: number | null
         }
@@ -70,6 +71,7 @@ export type Database = {
           goal?: string | null
           height?: number | null
           id: string
+          name?: string | null
           protein_goal?: number | null
           weight?: number | null
         }
@@ -82,6 +84,7 @@ export type Database = {
           goal?: string | null
           height?: number | null
           id?: string
+          name?: string | null
           protein_goal?: number | null
           weight?: number | null
         }

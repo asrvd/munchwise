@@ -83,13 +83,13 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const showSidebar = !isAuthPage && !isLandingPage && !isOnboardingPage && user;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen font-sans bg-background">
       {showNavbar && <Navbar />}
       <div className="flex flex-1 w-full">
         {showSidebar ? (
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1">
+            <main className="flex-1 lg:w-2/3">
               <SidebarTrigger className="m-4" />
               {children}
             </main>

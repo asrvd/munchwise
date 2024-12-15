@@ -1,3 +1,4 @@
+// @ts-expect-error Deno specific imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
@@ -36,6 +37,7 @@ Food to analyze: ${foodDescription}</user>
     const response = await fetch('https://api.together.xyz/inference', {
       method: 'POST',
       headers: {
+        // @ts-expect-error Deno
         'Authorization': `Bearer ${Deno.env.get('TOGETHER_API_KEY')}`,
         'Content-Type': 'application/json',
       },

@@ -50,7 +50,7 @@ const SignUp = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
-          <Card className="border-none shadow-xl">
+          <Card className="shadow-xl bg-orange-100 border border-orange-200/50">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold text-center">Check Your Email</CardTitle>
               <CardDescription className="text-center">
@@ -92,14 +92,7 @@ const SignUp = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="space-y-2 text-center mb-6">
-          <h1 className="text-3xl font-bold tracking-tight">Create an Account</h1>
-          <p className="text-muted-foreground">
-            Enter your details below to create your account
-          </p>
-        </div>
-
-        <Card className="border-none shadow-xl">
+        <Card className="shadow-xl bg-orange-100/40 border border-orange-200/50">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Sign up</CardTitle>
             <CardDescription>

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 // These values will be replaced with environment variables in production
+console.log(import.meta.env);
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
 

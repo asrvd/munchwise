@@ -120,32 +120,32 @@ const Track = () => {
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-orange-100/40 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Today's Progress</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex justify-around items-center py-4">
-            <CircularProgress 
-              value={totals?.calories || 0} 
-              max={profile?.daily_calories || 2000} 
-              label="Calories" 
+            <CircularProgress
+              value={totals?.calories || 0}
+              max={profile?.daily_calories || 2000}
+              label="Calories"
             />
-            <CircularProgress 
-              value={totals?.protein || 0} 
-              max={profile?.protein_goal || 150} 
-              label="Protein" 
+            <CircularProgress
+              value={totals?.protein || 0}
+              max={profile?.protein_goal || 150}
+              label="Protein"
             />
-            <CircularProgress 
-              value={totals?.carbs || 0} 
-              max={profile?.carbs_goal || 250} 
-              label="Carbs" 
+            <CircularProgress
+              value={totals?.carbs || 0}
+              max={profile?.carbs_goal || 250}
+              label="Carbs"
             />
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-orange-100/40 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Add Meal</CardTitle>
         </CardHeader>
@@ -165,7 +165,7 @@ const Track = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-orange-100/40 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Today's Meals</CardTitle>
         </CardHeader>
@@ -183,8 +183,8 @@ const Track = () => {
           ) : (
             <div className="space-y-4">
               {meals.map((meal, index) => (
-                <MealCard 
-                  key={meal.id} 
+                <MealCard
+                  key={meal.id}
                   meal={meal}
                   index={index}
                   onDelete={refetchMeals}

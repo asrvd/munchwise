@@ -70,6 +70,8 @@ export function AppSidebar() {
     }
   };
 
+  console.log(location.pathname);
+
   const userEmail = session?.user?.email;
   const userName = profile?.name || userEmail?.split('@')[0];
   const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName || '')}`;

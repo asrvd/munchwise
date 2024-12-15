@@ -10,6 +10,15 @@ const Footer = () => {
           className="text-primary hover:underline"
         >
           ashish
+        </a>{" "}
+        &{" "}
+        <a
+          href="https://lovable.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          lovable
         </a>
       </div>
     </footer>

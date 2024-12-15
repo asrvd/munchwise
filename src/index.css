@@ -1,3 +1,5 @@
+@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,700,800,900&f[]=clash-display@500,600,700&f[]=boska@300,301,400,401,500,700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

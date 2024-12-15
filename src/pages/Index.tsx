@@ -13,32 +13,26 @@ const Index = () => {
         transition={{ duration: 0.5 }}
         className="text-center space-y-6 max-w-2xl"
       >
-        <span className="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
+        <span className="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-medium border border-orange-200/90">
           Your Personal Nutrition Assistant
         </span>
-        
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight">
+
+        <h1 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tight">
           Track your nutrition journey with AI precision
         </h1>
-        
+
         <p className="text-xl text-gray-600 max-w-lg mx-auto">
-          Log meals in natural language, track calories effortlessly, and achieve your health goals with personalized insights.
+          Log meals in natural language, track calories effortlessly, and
+          achieve your health goals with personalized insights.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button
             size="lg"
             onClick={() => navigate("/sign-up")}
-            className="bg-primary hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 text-base max-w-max"
           >
-            Get Started
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={() => navigate("/sign-in")}
-          >
-            Sign In
+            Start tracking now!
           </Button>
         </div>
       </motion.div>
@@ -52,9 +46,9 @@ const Index = () => {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 card-hover"
+            className="bg-orange-50 p-6 rounded-2xl shadow-sm border border-orange-200/50 card-hover"
           >
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-orange-100 border border-orange-200/50 rounded-xl flex items-center justify-center mb-4">
               {feature.icon}
             </div>
             <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>

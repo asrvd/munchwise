@@ -15,6 +15,7 @@ export const CircularProgress = ({ value, max, size = 120, label }: CircularProg
   return (
     <div className="relative inline-flex flex-col items-center justify-center">
       <svg width={size} height={size} className="-rotate-90">
+        {/* Background circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -23,6 +24,7 @@ export const CircularProgress = ({ value, max, size = 120, label }: CircularProg
           strokeWidth={strokeWidth}
           fill="none"
         />
+        {/* Animated progress circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -31,11 +33,13 @@ export const CircularProgress = ({ value, max, size = 120, label }: CircularProg
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
-          strokeDashoffset={offset}
+          strokeDashoffset={circumference}
           strokeLinecap="round"
+          className="transition-[stroke-dashoffset] duration-1000 ease-in-out"
+          style={{ strokeDashoffset: offset }}
         />
       </svg>
-      <div className="absolute flex flex-col items-center">
+      <div className="absolute flex flex-col items-center animate-fade-in">
         <span className="text-xl font-bold">{Math.round(percentage)}%</span>
         <span className="text-sm text-muted-foreground">{label}</span>
       </div>

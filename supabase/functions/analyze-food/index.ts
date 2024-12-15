@@ -21,38 +21,44 @@ serve(async (req: Request) => {
 
     console.log("Analyzing food:", foodDescription);
 
-    const prompt = `<system>You are a helpful nutrition assistant that analyzes food descriptions and returns nutritional information in JSON format. You must return exactly one emoji that best represents the food.</system>
-<user>Analyze this food and return a JSON object with these nutritional values (use your best estimate):
-{
-  "calories": number (required),
-  "protein": number in grams (required),
-  "carbs": number in grams (required),
-  "fat": number in grams (required),
-  "emoji": string containing exactly one emoji character (required)
-}
-
-Food to analyze: ${foodDescription}</user>
-<assistant>`;
-
-    const response = await fetch("https://api.together.xyz/inference", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${Deno.env.get("TOGETHER_API_KEY")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        prompt: prompt,
-        temperature: 0.7,
-        top_p: 0.7,
-        top_k: 50,
-        repetition_penalty: 1,
-        max_tokens: 100,
-        response_format: {
-          type: "json_object",
+    const response = await fetch(
+      "https://api.together.xyz/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("TOGETHER_API_KEY")}`,
+          "Content-Type": "application/json",
         },
-      }),
-    });
+        body: JSON.stringify({
+          model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful nutrition assistant that analyzes food descriptions and returns nutritional information in JSON format. You must return exactly one emoji that best represents the food.",
+            },
+            {
+              role: "user",
+            content: `Analyze this food and RETURN ONLY a JSON object with these nutritional values (use your best estimate) in exactly the following format, DONT ADD ANYTHING ELSE OTHER:
+            {
+              "calories": number (required),
+              "protein": number in grams (required),
+              "carbs": number in grams (required),
+              "fat": number in grams (required),
+              "emoji": string containing exactly one emoji character (required)
+            }
+            
+            Food to analyze: ${foodDescription}`,
+            },
+          ],
+          max_tokens: 100,
+          temperature: 0.7,
+          response_format: {
+            type: "json_object",
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       console.error("Together API error:", await response.text());
@@ -60,37 +66,16 @@ Food to analyze: ${foodDescription}</user>
     }
 
     const data = await response.json();
-    console.log("Together API response:", data);
+    console.log("Together AI response:", data);
 
-    const nutritionText = data.output.choices[0].text;
-    console.log("Nutrition text:", nutritionText);
-
-    const nutritionData = JSON.parse(nutritionText);
-    console.log("Parsed nutrition data:", nutritionData);
-
-    // Ensure we only use the first emoji if multiple were returned
-    if (nutritionData.emoji) {
-      const firstEmoji = [...nutritionData.emoji.matchAll(/\p{Emoji}/gu)][0];
-      nutritionData.emoji = firstEmoji ? firstEmoji[0] : "🍽️";
-    }
-
-    if (typeof nutritionData.calories !== "number") {
-      throw new Error("Invalid calories value in response");
-    }
-
-    return new Response(JSON.stringify(nutritionData), {
+    return new Response(data.choices[0].message.content, {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in analyze-food function:", error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Failed to analyze food entry",
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    console.error("Error in calculate-goals function:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

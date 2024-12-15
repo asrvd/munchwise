@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Timer, Utensils, Trash2 } from "lucide-react";
+import { Timer, Utensils, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,11 +16,13 @@ interface MealCardProps {
     fat: number | null;
     emoji: string | null;
   };
+  index: number;
   onDelete: () => void;
 }
 
-export const MealCard = ({ meal, onDelete }: MealCardProps) => {
+export const MealCard = ({ meal, index, onDelete }: MealCardProps) => {
   const { toast } = useToast();
+  const [expanded, setExpanded] = useState(false);
 
   const handleDelete = async () => {
     const { error } = await supabase
@@ -38,7 +41,7 @@ export const MealCard = ({ meal, onDelete }: MealCardProps) => {
 
     toast({
       title: "Meal Deleted",
-      description: `Deleted: ${meal.food_description}`,
+      description: `Deleted: Meal #${index + 1}`,
     });
     onDelete();
   };
@@ -50,7 +53,19 @@ export const MealCard = ({ meal, onDelete }: MealCardProps) => {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <Utensils className="h-4 w-4 text-primary" />
-            <h3 className="font-medium">{meal.food_description}</h3>
+            <h3 className="font-medium">Meal #{index + 1}</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2 h-8 w-8 p-0"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <Timer className="h-4 w-4" />
@@ -61,6 +76,11 @@ export const MealCard = ({ meal, onDelete }: MealCardProps) => {
               })}
             </span>
           </div>
+          {expanded && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              <p>{meal.food_description}</p>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right">

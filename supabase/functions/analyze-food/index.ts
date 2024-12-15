@@ -20,14 +20,14 @@ serve(async (req) => {
 
     console.log('Analyzing food:', foodDescription);
 
-    const prompt = `<system>You are a helpful nutrition assistant that analyzes food descriptions and returns nutritional information in JSON format.</system>
+    const prompt = `<system>You are a helpful nutrition assistant that analyzes food descriptions and returns nutritional information in JSON format. You must return exactly one emoji that best represents the food.</system>
 <user>Analyze this food and return a JSON object with these nutritional values (use your best estimate):
 {
   "calories": number (required),
   "protein": number in grams (optional),
   "carbs": number in grams (optional),
   "fat": number in grams (optional),
-  "emoji": single emoji representing the food (optional)
+  "emoji": string containing exactly one emoji character (required)
 }
 
 Food to analyze: ${foodDescription}</user>
@@ -64,6 +64,12 @@ Food to analyze: ${foodDescription}</user>
 
     const nutritionData = JSON.parse(nutritionText);
     console.log('Parsed nutrition data:', nutritionData);
+
+    // Ensure we only use the first emoji if multiple were returned
+    if (nutritionData.emoji) {
+      const firstEmoji = [...nutritionData.emoji.matchAll(/\p{Emoji}/gu)][0];
+      nutritionData.emoji = firstEmoji ? firstEmoji[0] : '🍽️';
+    }
 
     if (typeof nutritionData.calories !== 'number') {
       throw new Error('Invalid calories value in response');

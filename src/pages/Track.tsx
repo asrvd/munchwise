@@ -15,7 +15,6 @@ const Track = () => {
   const [mealInput, setMealInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Fetch user profile for goals
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -33,7 +32,6 @@ const Track = () => {
     }
   });
 
-  // Fetch today's meals
   const { data: meals, refetch: refetchMeals } = useQuery({
     queryKey: ['meals', 'today'],
     queryFn: async () => {
@@ -55,7 +53,6 @@ const Track = () => {
     }
   });
 
-  // Calculate totals
   const totals = meals?.reduce((acc, meal) => ({
     calories: (acc.calories || 0) + meal.calories,
     protein: (acc.protein || 0) + (meal.protein || 0),
@@ -185,10 +182,11 @@ const Track = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {meals.map((meal) => (
+              {meals.map((meal, index) => (
                 <MealCard 
                   key={meal.id} 
-                  meal={meal} 
+                  meal={meal}
+                  index={index}
                   onDelete={refetchMeals}
                 />
               ))}

@@ -84,7 +84,8 @@ const Onboarding = () => {
         description: "Your nutrition goals have been set. Let's start tracking!",
       });
       
-      navigate("/track");
+      // Add the redirect to /track page
+      navigate("/track", { replace: true });
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({

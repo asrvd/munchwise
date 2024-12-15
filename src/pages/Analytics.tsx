@@ -99,28 +99,36 @@ const Analytics = () => {
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-orange-50/60 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Weekly Calorie Intake</CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px]">
+        <CardContent className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgb(255 255 255 / 0.6)",
+                  borderRadius: "8px",
+                  border: "rgb(254 215 170 / 0.5)",
+                  backdropFilter: "blur(10px)",
+                }}
+              />
               <Line
                 type="monotone"
                 dataKey="calories"
                 stroke="#F97316"
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
               <Line
                 type="monotone"
                 dataKey="goal"
                 stroke="#94a3b8"
                 strokeDasharray="5 5"
+                strokeWidth={1.5}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -128,7 +136,7 @@ const Analytics = () => {
       </Card>
 
       <div className="grid md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="bg-orange-50/60 border border-orange-200/50">
           <CardHeader>
             <CardTitle className="text-lg">Proteins</CardTitle>
           </CardHeader>
@@ -139,7 +147,7 @@ const Analytics = () => {
             <p className="text-sm text-muted-foreground">Daily Average</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-orange-50/60 border border-orange-200/50">
           <CardHeader>
             <CardTitle className="text-lg">Carbohydrates</CardTitle>
           </CardHeader>
@@ -150,7 +158,7 @@ const Analytics = () => {
             <p className="text-sm text-muted-foreground">Daily Average</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-orange-50/60 border border-orange-200/50">
           <CardHeader>
             <CardTitle className="text-lg">Fats</CardTitle>
           </CardHeader>
@@ -163,7 +171,7 @@ const Analytics = () => {
         </Card>
       </div>
 
-      <Card>
+      <Card className="bg-orange-50/60 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Weekly Summary</CardTitle>
         </CardHeader>
@@ -171,7 +179,9 @@ const Analytics = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span>Average Daily Calories</span>
-              <span className="font-medium">{Math.round(averageDailyCalories)} cal</span>
+              <span className="font-medium">
+                {Math.round(averageDailyCalories)} cal
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span>Days On Target</span>

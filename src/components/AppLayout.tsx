@@ -75,7 +75,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen font-sans bg-background">
+    <div className="flex flex-col min-h-screen font-sans bg-orange-50/60">
       <Navbar />
       <main className="flex-1">
         {children}

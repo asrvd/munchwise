@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Settings, BarChart, Utensils } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -43,11 +43,11 @@ const Navbar = () => {
 
   const getAvatarUrl = (email: string) => {
     const seed = email || 'default';
-    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
+    return `https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(seed)}`;
   };
 
   return (
-    <nav className="border-b bg-orange-50/90 backdrop-blur sticky top-0 z-50">
+    <nav className="border-b border-orange-200/50 bg-orange-50/60 sticky top-0 z-50">
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
@@ -59,11 +59,14 @@ const Navbar = () => {
             {session?.user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage 
-                        src={getAvatarUrl(session.user.email || '')} 
-                        alt={profile?.name || session.user.email || 'User'} 
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full backdrop-blur border border-orange-200/50"
+                  >
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={getAvatarUrl(session.user.email || "")}
+                        alt={profile?.name || session.user.email || "User"}
                       />
                       <AvatarFallback>
                         <User className="h-4 w-4" />
@@ -71,17 +74,32 @@ const Navbar = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link to="/track">Track</Link>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-orange-50 text-base border border-orange-200/50 w-48"
+                >
+                  <DropdownMenuItem asChild className="text-base cursor-pointer">
+                    <Link to="/track">
+                      <Utensils className="mr-2 h-4 w-4" />
+                      Track
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/analytics">Analytics</Link>
+                  <DropdownMenuItem asChild className="text-base cursor-pointer">
+                    <Link to="/analytics">
+                      <BarChart className="mr-2 h-4 w-4" />
+                      Analytics
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/settings">Settings</Link>
+                  <DropdownMenuItem asChild className="text-base cursor-pointer">
+                    <Link to="/settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut}>
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="text-base cursor-pointer"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>

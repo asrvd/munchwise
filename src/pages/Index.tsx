@@ -46,9 +46,9 @@ const Index = () => {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="bg-orange-50 p-6 rounded-2xl shadow-sm border border-orange-200/50 card-hover"
+            className="bg-orange-50/60 p-6 rounded-2xl shadow-sm border border-orange-200/50 card-hover"
           >
-            <div className="w-12 h-12 bg-orange-100 border border-orange-200/50 rounded-xl flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-orange-50/60 border border-orange-200/50 rounded-xl flex items-center justify-center mb-4">
               {feature.icon}
             </div>
             <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>

@@ -16,48 +16,55 @@ const Track = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const { data: profile } = useQuery({
-    queryKey: ['profile'],
+    queryKey: ["profile"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
-      
+
       if (error) throw error;
       return data;
-    }
+    },
   });
 
   const { data: meals, refetch: refetchMeals } = useQuery({
-    queryKey: ['meals', 'today'],
+    queryKey: ["meals", "today"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       const { data, error } = await supabase
-        .from('food_entries')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('meal_time', today.toISOString())
-        .order('meal_time', { ascending: false });
-      
+        .from("food_entries")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("meal_time", today.toISOString())
+        .order("meal_time", { ascending: false });
+
       if (error) throw error;
       return data;
-    }
+    },
   });
 
-  const totals = meals?.reduce((acc, meal) => ({
-    calories: (acc.calories || 0) + meal.calories,
-    protein: (acc.protein || 0) + (meal.protein || 0),
-    carbs: (acc.carbs || 0) + (meal.carbs || 0),
-  }), { calories: 0, protein: 0, carbs: 0 });
+  const totals = meals?.reduce(
+    (acc, meal) => ({
+      calories: (acc.calories || 0) + meal.calories,
+      protein: (acc.protein || 0) + (meal.protein || 0),
+      carbs: (acc.carbs || 0) + (meal.carbs || 0),
+    }),
+    { calories: 0, protein: 0, carbs: 0 }
+  );
 
   const handleAddMeal = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +72,9 @@ const Track = () => {
 
     setIsAnalyzing(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: "Error",
@@ -78,18 +87,16 @@ const Track = () => {
       // Analyze the food using the edge function
       const analysis = await analyzeFoodEntry(mealInput);
 
-      const { error } = await supabase
-        .from('food_entries')
-        .insert([
-          {
-            user_id: user.id,
-            food_description: mealInput,
-            calories: analysis.calories,
-            protein: analysis.protein,
-            carbs: analysis.carbs,
-            fat: analysis.fat,
-          }
-        ]);
+      const { error } = await supabase.from("food_entries").insert([
+        {
+          user_id: user.id,
+          food_description: mealInput,
+          calories: analysis.calories,
+          protein: analysis.protein,
+          carbs: analysis.carbs,
+          fat: analysis.fat,
+        },
+      ]);
 
       if (error) throw error;
 
@@ -100,7 +107,7 @@ const Track = () => {
       setMealInput("");
       refetchMeals();
     } catch (error) {
-      console.error('Error adding meal:', error);
+      console.error("Error adding meal:", error);
       toast({
         title: "Error",
         description: "Failed to add meal. Please try again.",
@@ -120,7 +127,7 @@ const Track = () => {
         </p>
       </div>
 
-      <Card className="bg-orange-100/40 border border-orange-200/50">
+      <Card className="bg-orange-50/60 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Today's Progress</CardTitle>
         </CardHeader>
@@ -145,27 +152,27 @@ const Track = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-orange-100/40 border border-orange-200/50">
+      <Card className="bg-orange-50/60 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Add Meal</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAddMeal} className="flex gap-2">
             <Input
-              placeholder="Describe your meal (e.g., 1 bowl rice, 2 chapati)"
+              placeholder="Describe your meal (e.g., 1 bowl rice, 100g chicken, 50g broccoli)"
               value={mealInput}
               onChange={(e) => setMealInput(e.target.value)}
               disabled={isAnalyzing}
             />
             <Button type="submit" disabled={isAnalyzing}>
-              <PlusCircle className="mr-2 h-4 w-4" />
+              <PlusCircle className="h-4 w-4" />
               {isAnalyzing ? "Analyzing..." : "Add"}
             </Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card className="bg-orange-100/40 border border-orange-200/50">
+      <Card className="bg-orange-50/60 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Today's Meals</CardTitle>
         </CardHeader>

@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="py-4 border-t">
+    <footer className="py-4 border-t border-orange-200/50 bg-orange-50/60">
       <div className="container text-center text-sm text-muted-foreground">
         Built for Supabase LW13 Hackathon by{" "}
         <a

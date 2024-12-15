@@ -47,7 +47,7 @@ export const MealCard = ({ meal, index, onDelete }: MealCardProps) => {
   };
 
   return (
-    <Card className="card-hover bg-white/80 border border-orange-200/50">
+    <Card className="card-hover bg-white/60 border border-orange-200/50">
       <CardContent className="flex items-center p-4">
         <div className="text-4xl mr-4">{meal.emoji || '🍽️'}</div>
         <div className="flex-1">

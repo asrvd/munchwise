@@ -105,7 +105,7 @@ const Settings = () => {
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-orange-50/60 border border-orange-200/50">
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
         </CardHeader>

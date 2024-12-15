@@ -3,49 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Utensils, Timer, Plus } from "lucide-react";
+import { PlusCircle, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { analyzeFoodEntry } from "@/lib/analyze-food";
-
-// Extract CircularProgress to a separate component for better organization
-const CircularProgress = ({ value, max, size = 120, label }: { value: number; max: number; size?: number; label: string }) => {
-  const percentage = max > 0 ? (value / max) * 100 : 0;
-  const strokeWidth = 8;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percentage / 100) * circumference;
-
-  return (
-    <div className="relative inline-flex flex-col items-center justify-center">
-      <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="hsl(var(--primary) / 0.2)"
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="hsl(var(--primary))"
-          strokeWidth={strokeWidth}
-          fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-        />
-      </svg>
-      <div className="absolute flex flex-col items-center">
-        <span className="text-xl font-bold">{Math.round(percentage)}%</span>
-        <span className="text-sm text-muted-foreground">{label}</span>
-      </div>
-    </div>
-  );
-};
+import { CircularProgress } from "@/components/track/CircularProgress";
+import { MealCard } from "@/components/track/MealCard";
 
 const Track = () => {
   const { toast } = useToast();
@@ -223,32 +186,11 @@ const Track = () => {
           ) : (
             <div className="space-y-4">
               {meals.map((meal) => (
-                <Card key={meal.id} className="card-hover">
-                  <CardContent className="flex items-center p-4">
-                    <div className="text-4xl mr-4">{meal.emoji || '🍽️'}</div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Utensils className="h-4 w-4 text-primary" />
-                        <h3 className="font-medium">{meal.food_description}</h3>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                        <Timer className="h-4 w-4" />
-                        <span>
-                          {new Date(meal.meal_time).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">{meal.calories} cal</p>
-                      <p className="text-sm text-muted-foreground">
-                        P: {meal.protein || 0}g • C: {meal.carbs || 0}g • F: {meal.fat || 0}g
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <MealCard 
+                  key={meal.id} 
+                  meal={meal} 
+                  onDelete={refetchMeals}
+                />
               ))}
             </div>
           )}

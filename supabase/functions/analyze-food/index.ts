@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,6 +6,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -50,7 +50,12 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      throw new Error(`Together API error: ${response.statusText}`);
+    }
+
     const data = await response.json();
+    console.log('Together API response:', data);
     
     // Extract the JSON object from the response
     const nutritionMatch = data.output.choices[0].text.trim().match(/\{[\s\S]*\}/);
@@ -58,7 +63,13 @@ serve(async (req) => {
       throw new Error('Could not parse nutrition data from response');
     }
 
-    const nutritionData = JSON.parse(nutritionMatch[0]);
+    let nutritionData;
+    try {
+      nutritionData = JSON.parse(nutritionMatch[0]);
+    } catch (e) {
+      console.error('JSON parse error:', e);
+      throw new Error('Invalid nutrition data format');
+    }
 
     // Validate required fields
     if (typeof nutritionData.calories !== 'number') {
@@ -74,9 +85,9 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in analyze-food function:', error);
     return new Response(
-      JSON.stringify({ error: 'Failed to analyze food entry' }),
+      JSON.stringify({ error: error.message || 'Failed to analyze food entry' }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 

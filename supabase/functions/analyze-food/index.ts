@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,32 +8,30 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { foodDescription } = await req.json();
-
-    if (!foodDescription) {
-      return new Response(
-        JSON.stringify({ error: 'Food description is required' }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
-        }
-      );
-    }
-
-    const prompt = `Analyze this food and return a JSON object with these nutritional values (use your best estimate):
-    {
-      "calories": number (required),
-      "protein": number in grams (optional),
-      "carbs": number in grams (optional),
-      "fat": number in grams (optional),
-      "emoji": single emoji representing the food (optional)
-    }
     
-    Food to analyze: ${foodDescription}`;
+    if (!foodDescription) {
+      throw new Error('Food description is required');
+    }
+
+    console.log('Analyzing food:', foodDescription);
+
+    const prompt = `<system>You are a helpful nutrition assistant that analyzes food descriptions and returns nutritional information in JSON format.</system>
+<user>Analyze this food and return a JSON object with these nutritional values (use your best estimate):
+{
+  "calories": number (required),
+  "protein": number in grams (optional),
+  "carbs": number in grams (optional),
+  "fat": number in grams (optional),
+  "emoji": single emoji representing the food (optional)
+}
+
+Food to analyze: ${foodDescription}</user>
+<assistant>`;
 
     const response = await fetch('https://api.together.xyz/inference', {
       method: 'POST',
@@ -45,44 +43,35 @@ serve(async (req) => {
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
         prompt: prompt,
         temperature: 0.7,
+        top_p: 0.7,
+        top_k: 50,
+        repetition_penalty: 1,
         max_tokens: 100,
-        stop: ['}'],
+        response_format: { "type": "json_object" },
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Together API error: ${response.statusText}`);
+      console.error('Together API error:', await response.text());
+      throw new Error('Failed to analyze food with Together API');
     }
 
     const data = await response.json();
     console.log('Together API response:', data);
-    
-    // Extract the JSON object from the response
-    const nutritionMatch = data.output.choices[0].text.trim().match(/\{[\s\S]*\}/);
-    if (!nutritionMatch) {
-      throw new Error('Could not parse nutrition data from response');
-    }
 
-    let nutritionData;
-    try {
-      nutritionData = JSON.parse(nutritionMatch[0]);
-    } catch (e) {
-      console.error('JSON parse error:', e);
-      throw new Error('Invalid nutrition data format');
-    }
+    const nutritionText = data.output.choices[0].text;
+    console.log('Nutrition text:', nutritionText);
 
-    // Validate required fields
+    const nutritionData = JSON.parse(nutritionText);
+    console.log('Parsed nutrition data:', nutritionData);
+
     if (typeof nutritionData.calories !== 'number') {
       throw new Error('Invalid calories value in response');
     }
 
-    return new Response(
-      JSON.stringify(nutritionData),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
-    );
+    return new Response(JSON.stringify(nutritionData), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
     console.error('Error in analyze-food function:', error);
@@ -90,7 +79,7 @@ serve(async (req) => {
       JSON.stringify({ error: error.message || 'Failed to analyze food entry' }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: 500,
       }
     );
   }

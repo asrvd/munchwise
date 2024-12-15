@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useProfileCreation } from "@/hooks/useProfileCreation";
 import { toast } from "sonner";
 
 const SignUp = () => {
@@ -15,15 +14,6 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState<string>();
-
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-      setUserId(session?.user?.id);
-    }
-  });
-
-  useProfileCreation(userId, name);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +36,7 @@ const SignUp = () => {
     }
 
     toast.success("Account created successfully!");
+    navigate('/onboarding');
     setLoading(false);
   };
 

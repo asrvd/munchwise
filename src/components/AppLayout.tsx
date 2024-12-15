@@ -1,6 +1,4 @@
 import { useLocation, Navigate } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
@@ -76,28 +74,12 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/onboarding" replace />;
   }
 
-  // Show navbar on landing page, auth pages, and onboarding
-  const showNavbar = isLandingPage || isAuthPage || isOnboardingPage;
-  
-  // Show sidebar only on authenticated dashboard pages, excluding onboarding
-  const showSidebar = !isAuthPage && !isLandingPage && !isOnboardingPage && user;
-
   return (
     <div className="flex flex-col min-h-screen font-sans bg-background">
-      {showNavbar && <Navbar />}
-      <div className="flex flex-1 w-full">
-        {showSidebar ? (
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="flex-1 lg:w-2/3">
-              <SidebarTrigger className="m-4" />
-              {children}
-            </main>
-          </SidebarProvider>
-        ) : (
-          <main className="flex-1">{children}</main>
-        )}
-      </div>
+      <Navbar />
+      <main className="flex-1">
+        {children}
+      </main>
       <Footer />
     </div>
   );

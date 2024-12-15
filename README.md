@@ -1,6 +1,6 @@
 # MunchWise Tracker
 
-A comprehensive nutrition tracking application that helps users monitor their daily food intake, track macronutrients, and analyze their eating habits over time.
+A comprehensive nutrition tracking application that helps users monitor their daily food intake, track macronutrients, and analyze their eating habits over time all using natural human language.
 
 ## Features
 

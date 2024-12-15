@@ -1,21 +1,23 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export interface FoodAnalysis {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-}
+export const analyzeFoodEntry = async (foodDescription: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
 
-export async function analyzeFoodEntry(description: string): Promise<FoodAnalysis> {
-  const { data, error } = await supabase.functions.invoke('analyze-food', {
-    body: { foodDescription: description }
+  const response = await fetch('/analyze-food', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${user.id}`,
+    },
+    body: JSON.stringify({ foodDescription }),
   });
 
-  if (error) {
-    console.error('Error analyzing food:', error);
-    throw error;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to analyze food entry');
   }
 
-  return data as FoodAnalysis;
-}
+  const data = await response.json();
+  return data;
+};

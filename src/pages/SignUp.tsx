@@ -14,6 +14,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [signupComplete, setSignupComplete] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,10 +36,53 @@ const SignUp = () => {
       return;
     }
 
-    toast.success("Account created successfully!");
-    navigate('/onboarding');
+    setSignupComplete(true);
+    toast.success("Account created successfully! Please check your email for confirmation.");
     setLoading(false);
   };
+
+  if (signupComplete) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 to-white p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Card className="border-none shadow-xl">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-center">Check Your Email</CardTitle>
+              <CardDescription className="text-center">
+                We've sent you a confirmation email to <span className="font-medium">{email}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center space-y-2">
+                <p className="text-muted-foreground">
+                  Please check your email and click the confirmation link to activate your account.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Once confirmed, you can{" "}
+                  <Link to="/sign-in" className="text-primary hover:underline">
+                    sign in
+                  </Link>{" "}
+                  to your account.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate("/sign-in")}
+              >
+                Go to Sign In
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 to-white p-4">

@@ -54,19 +54,24 @@ A comprehensive nutrition tracking application that helps users monitor their da
 
 2. **Clone the Repository**
    ```bash
-   git clone <repository-url>
-   cd munchwise-tracker
+   git clone https://github.com/asrvd/munchwise
+   cd munchwise
    ```
 
 3. **Install Dependencies**
    ```bash
    npm install
    # or
-   yarn install
+   pnpm install
    ```
 
 4. **Environment Setup**
-   The project uses Supabase, and the configuration is already set up in the codebase. No additional environment variables are needed for local development.
+   Create a `.env` file in the root of the project and add the following variables from your Supabase project:
+   ```
+   VITE_SUPABASE_URL=
+   VITE_SUPABASE_ANON_KEY=
+   ```
+   You will also need a Together AI's API key and you will have to add it as a secret for your Supabase edge functions.
 
 5. **Start Development Server**
    ```bash

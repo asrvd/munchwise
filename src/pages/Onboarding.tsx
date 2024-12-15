@@ -13,33 +13,58 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Dumbbell, Scale, Target } from "lucide-react";
+import { calculateNutritionGoals } from "@/lib/calculate-goals";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [isCalculating, setIsCalculating] = useState(false);
   const [formData, setFormData] = useState({
     age: "",
     height: "",
     weight: "",
     goal: "maintain",
-    calorieGoal: "2000",
-    proteinGoal: "150",
-    carbsGoal: "250"
+    calorieGoal: "",
+    proteinGoal: "",
+    carbsGoal: "",
+    fatGoal: ""
   });
 
-  const calculateGoals = () => {
-    // Simplified calculation for demo
-    let baseCalories = 2000;
-    if (formData.goal === "lose") baseCalories -= 500;
-    if (formData.goal === "gain") baseCalories += 500;
-    
-    setFormData(prev => ({
-      ...prev,
-      calorieGoal: baseCalories.toString(),
-      proteinGoal: Math.round(baseCalories * 0.3 / 4).toString(),
-      carbsGoal: Math.round(baseCalories * 0.5 / 4).toString()
-    }));
+  const calculateGoals = async () => {
+    setIsCalculating(true);
+    try {
+      const goals = await calculateNutritionGoals({
+        age: Number(formData.age),
+        height: Number(formData.height),
+        weight: Number(formData.weight),
+        goal: formData.goal as 'lose' | 'maintain' | 'gain'
+      });
+      
+      setFormData(prev => ({
+        ...prev,
+        calorieGoal: goals.dailyCalories.toString(),
+        proteinGoal: goals.protein.toString(),
+        carbsGoal: goals.carbs.toString(),
+        fatGoal: goals.fat.toString()
+      }));
+
+      toast({
+        title: "Goals Calculated",
+        description: "Your nutrition goals have been calculated based on your metrics.",
+      });
+      
+      setStep(2);
+    } catch (error) {
+      console.error('Error calculating goals:', error);
+      toast({
+        title: "Error",
+        description: "Failed to calculate nutrition goals. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -66,7 +91,7 @@ const Onboarding = () => {
             <CardTitle className="text-2xl text-center">Tell us about yourself</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); calculateGoals(); setStep(2); }}>
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); calculateGoals(); }}>
               <div className="space-y-2">
                 <Label htmlFor="age">Age</Label>
                 <Input
@@ -119,9 +144,13 @@ const Onboarding = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full">
-                Next
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button type="submit" className="w-full" disabled={isCalculating}>
+                {isCalculating ? "Calculating..." : (
+                  <>
+                    Calculate Goals
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
@@ -129,7 +158,7 @@ const Onboarding = () => {
       ) : (
         <Card className="w-full">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Customize Your Goals</CardTitle>
+            <CardTitle className="text-2xl text-center">Your Personalized Goals</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -170,6 +199,19 @@ const Onboarding = () => {
                     type="number"
                     value={formData.carbsGoal}
                     onChange={(e) => setFormData({ ...formData, carbsGoal: e.target.value })}
+                    className="input-focus"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Scale className="h-5 w-5 text-primary" />
+                    <Label htmlFor="fat">Daily Fat Goal (g)</Label>
+                  </div>
+                  <Input
+                    id="fat"
+                    type="number"
+                    value={formData.fatGoal}
+                    onChange={(e) => setFormData({ ...formData, fatGoal: e.target.value })}
                     className="input-focus"
                   />
                 </div>
